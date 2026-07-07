@@ -94,7 +94,7 @@ export default function Timeline({ events, tick: _tick, onEventClick }: Timeline
                    border border-dashed border-nyala-gray-light p-8"
       >
         <p className="font-mono text-sm text-nyala-gray-muted">
-          No events found for this selection
+          No activities found for this selection
         </p>
       </motion.div>
     );

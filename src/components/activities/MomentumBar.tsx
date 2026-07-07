@@ -23,7 +23,7 @@ export default function MomentumBar({ events, tick: _tick }: MomentumBarProps) {
     {
       emoji: "🔥",
       value: thisWeek.length,
-      label: thisWeek.length === 1 ? "event this week" : "events this week",
+      label: thisWeek.length === 1 ? "activity this week" : "activities this week",
       show: true,
     },
     {
@@ -35,7 +35,7 @@ export default function MomentumBar({ events, tick: _tick }: MomentumBarProps) {
     {
       emoji: "🚀",
       value: next ? getTimeUntilNext(next) : null,
-      label: next ? `next: ${next.title.slice(0, 24)}${next.title.length > 24 ? '…' : ''}` : "no upcoming events",
+      label: next ? `next: ${next.title.slice(0, 24)}${next.title.length > 24 ? '…' : ''}` : "no upcoming activities",
       show: true,
     },
   ];

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getEventCountOnDate, getEventDates } from "@/lib/event-utils";
+import { filterEventsByStatus, getEventCountOnDate, getEventDates } from "@/lib/event-utils";
 import type { Activity } from "@/types";
 
 interface SmartCalendarProps {
@@ -44,8 +44,18 @@ export default function SmartCalendar({
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [direction, setDirection] = useState(0);
 
+  const visibleEvents = useMemo(() => {
+    if (filterMode === "upcoming") {
+      return filterEventsByStatus(events, "upcoming");
+    }
+    if (filterMode === "past") {
+      return filterEventsByStatus(events, "past");
+    }
+    return events;
+  }, [events, filterMode]);
+
   const todayStr = toDateStr(today.getFullYear(), today.getMonth(), today.getDate());
-  const eventDates = useMemo(() => getEventDates(events), [events]);
+  const eventDates = useMemo(() => getEventDates(visibleEvents), [visibleEvents]);
 
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
   const firstDay = getFirstDayOfWeek(viewYear, viewMonth);
@@ -168,7 +178,7 @@ export default function SmartCalendar({
             const dateStr = toDateStr(viewYear, viewMonth, day);
             const isToday = dateStr === todayStr;
             const isSelected = dateStr === selectedDate;
-            const eventCount = getEventCountOnDate(events, dateStr);
+            const eventCount = getEventCountOnDate(visibleEvents, dateStr);
             const hasEvents = eventDates.has(dateStr);
 
             return (
@@ -249,7 +259,7 @@ export default function SmartCalendar({
           >
             <div className="flex items-center justify-between rounded-md bg-nyala-red/10 px-3 py-2">
               <span className="font-mono text-[10px] text-nyala-red">
-                📅 Showing events on{" "}
+                📅 Showing activities on{" "}
                 {new Date(selectedDate + "T00:00:00").toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",

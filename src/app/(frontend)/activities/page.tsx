@@ -7,7 +7,7 @@ export const revalidate = 60;
 export const metadata = {
   title: "Activities — Nyala Labs",
   description:
-    "Explore Nyala Labs events, workshops, and activities. A living timeline of everything we build, learn, and ignite.",
+    "Explore Nyala Labs activities, workshops, and collaborations. A living timeline of everything we build, learn, and ignite.",
 };
 
 export default async function ActivitiesPage() {

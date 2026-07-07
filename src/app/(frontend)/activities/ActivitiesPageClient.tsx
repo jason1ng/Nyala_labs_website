@@ -103,27 +103,49 @@ export default function ActivitiesPageClient({
             <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-nyala-red">
-                  spotlight
+                  latest spotlight
                 </p>
                 <h3 className="mt-2 font-mono text-xl font-bold text-nyala-yellow md:text-2xl">
-                  Chutes Hack Malaysia 2026
+                  SunFest 2026: Harvest of Wonders
                 </h3>
                 <p className="mt-1 font-mono text-xs text-nyala-gray-muted md:text-sm">
-                  Multi-week hybrid AI hackathon by Nyala Labs & Chutes.
+                  July 7 - 10, 2026 with interactive booths, games, and a special opening ceremony.
+                </p>
+              </div>
+              <a
+                href="/sunfest"
+                className="w-fit rounded-none border border-nyala-red bg-nyala-red px-6 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-nyala-white transition-all duration-300 hover:bg-nyala-red-dark hover:shadow-lg hover:shadow-nyala-red/20"
+              >
+                View SunFest Details
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-none border border-nyala-gray-light/80 bg-nyala-gray/70 p-4 md:p-5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-nyala-gray-muted">
+              history record
+            </p>
+            <div className="mt-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h4 className="font-mono text-base font-semibold text-nyala-white">
+                  Chutes Hack Malaysia 2026
+                </h4>
+                <p className="mt-1 font-mono text-xs leading-relaxed text-nyala-gray-muted">
+                  A past hybrid AI hackathon that remains part of Nyala Labs&apos; story and is now shown as a historical milestone.
                 </p>
               </div>
               <a
                 href="/chutes-hackathon"
-                className="w-fit rounded-none border border-nyala-red bg-nyala-red px-6 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-nyala-white transition-all duration-300 hover:bg-nyala-red-dark hover:shadow-lg hover:shadow-nyala-red/20"
+                className="w-fit border border-nyala-gray-light px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-nyala-gray-muted transition-all duration-300 hover:border-nyala-yellow hover:text-nyala-yellow"
               >
-                View Chutes Hackathon Details
+                View Past Event
               </a>
             </div>
           </div>
         </motion.div>
 
         {/* Momentum Bar */}
-        <MomentumBar events={activities} tick={tick} />
+        <MomentumBar events={filtered} tick={tick} />
 
         {/* Mobile calendar toggle */}
         <div className="mb-4 lg:hidden">
