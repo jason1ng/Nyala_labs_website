@@ -174,7 +174,7 @@ export default function ActivitiesPageClient({
               className="mt-2 overflow-hidden"
             >
               <SmartCalendar
-                events={activities}
+                eventDates={activities.map((activity) => activity.startDate)}
                 selectedDate={selectedDate}
                 onSelectDate={handleSelectDate}
                 filterMode={filterMode}
@@ -199,7 +199,7 @@ export default function ActivitiesPageClient({
           <div className="hidden w-72 flex-shrink-0 lg:block xl:w-80">
             <div className="sticky top-28">
               <SmartCalendar
-                events={activities}
+                eventDates={activities.map((activity) => activity.startDate)}
                 selectedDate={selectedDate}
                 onSelectDate={handleSelectDate}
                 filterMode={filterMode}
