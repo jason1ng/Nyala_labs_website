@@ -5,7 +5,7 @@ export const Activities: CollectionConfig = {
   slug: "activities",
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "status", "date", "location"],
+    defaultColumns: ["title", "startDate", "endDate", "location"],
   },
   access: {
     read: () => true,
@@ -25,9 +25,45 @@ export const Activities: CollectionConfig = {
       required: true,
     },
     {
-      name: "date",
+      name: "startDate",
       type: "date",
       required: true,
+      admin: {
+        date: {
+          pickerAppearance: "dayAndTime",
+          displayFormat: "yyyy-MM-dd HH:mm",
+        },
+        description: "When the event starts (used to compute live status)",
+      },
+      validate: (value: string) => {
+        if (!value) return true; // let required handle it
+        const date = new Date(value);
+        if (isNaN(date.getTime())) {
+          return "Invalid date format";
+        }
+        return true;
+      },
+    },
+    {
+      name: "endDate",
+      type: "date",
+      required: false,
+      admin: {
+        date: {
+          pickerAppearance: "dayAndTime",
+          displayFormat: "yyyy-MM-dd HH:mm",
+        },
+        description:
+          "When the event ends. Leave blank to default to startDate + 2 hours.",
+      },
+      validate: (value: string | null) => {
+        if (!value) return true;
+        const date = new Date(value);
+        if (isNaN(date.getTime())) {
+          return "Invalid date format";
+        }
+        return true;
+      },
     },
     {
       name: "location",
@@ -41,17 +77,21 @@ export const Activities: CollectionConfig = {
       required: false,
     },
     {
-      name: "status",
-      type: "select",
-      required: true,
-      defaultValue: "upcoming",
-      options: [
-        { label: "Upcoming", value: "upcoming" },
-        { label: "Ongoing", value: "ongoing" },
-        { label: "Completed", value: "completed" },
+      name: "speakers",
+      type: "array",
+      required: false,
+      admin: {
+        description: "Speakers or presenters at this event",
+      },
+      fields: [
+        {
+          name: "name",
+          type: "text",
+          required: true,
+        },
       ],
     },
   ],
-  defaultSort: "-date",
+  defaultSort: "-startDate",
   timestamps: true,
 };

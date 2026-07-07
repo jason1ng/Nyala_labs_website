@@ -179,9 +179,9 @@ export default function HeroVideoSection({ initialHeroMedia }: HeroVideoSectionP
             href="https://forms.gle/f3g69MxUrquDFWQZ9"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative overflow-hidden border border-nyala-red bg-nyala-red px-8 py-3 font-mono text-xs uppercase tracking-[0.2em] text-nyala-white transition-all duration-300 hover:bg-nyala-red-dark hover:shadow-lg hover:shadow-nyala-red/20"
+            className="border border-nyala-red bg-nyala-red px-8 py-3 font-mono text-xs uppercase tracking-[0.2em] text-nyala-white transition-all duration-300 hover:bg-nyala-red-dark hover:shadow-lg hover:shadow-nyala-red/20"
           >
-            <span className="relative z-10">Join us →</span>
+            Join us →
           </a>
           <a
             href="/about"

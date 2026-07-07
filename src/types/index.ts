@@ -74,10 +74,11 @@ export type Activity = {
   _id: string;
   title: string;
   description: string;
-  date: string;
+  startDate: string;
+  endDate: string;
   location: string;
   image: string;
-  status: string;
+  speakers: string[];
 };
 
 export type HeroMediaItem = {

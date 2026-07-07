@@ -24,7 +24,7 @@ export default function SiteShell({ children }: SiteShellProps) {
       {isDesktop && <SplashCursor />}
       <GrainOverlay />
       <Navbar />
-      <main className="min-h-screen">{children}</main>
+      <main className="relative z-0 min-h-screen">{children}</main>
       <Footer />
     </>
   );

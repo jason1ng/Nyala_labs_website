@@ -258,10 +258,25 @@ export interface Activity {
   id: number;
   title: string;
   description: string;
-  date: string;
+  /**
+   * When the event starts (used to compute live status)
+   */
+  startDate: string;
+  /**
+   * When the event ends. Leave blank to default to startDate + 2 hours.
+   */
+  endDate?: string | null;
   location?: string | null;
   image?: (number | null) | Media;
-  status: 'upcoming' | 'ongoing' | 'completed';
+  /**
+   * Speakers or presenters at this event
+   */
+  speakers?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -446,10 +461,16 @@ export interface CommitteeMembersSelect<T extends boolean = true> {
 export interface ActivitiesSelect<T extends boolean = true> {
   title?: T;
   description?: T;
-  date?: T;
+  startDate?: T;
+  endDate?: T;
   location?: T;
   image?: T;
-  status?: T;
+  speakers?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

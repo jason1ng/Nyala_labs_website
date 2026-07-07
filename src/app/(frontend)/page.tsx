@@ -14,14 +14,15 @@ const defaultHighlightCaptions = [
 export default async function HomePage() {
   const [blogDocs, activityDocs, homepageData] = await Promise.all([
     getServerCollection("blog-posts", { sort: "-publishedAt", limit: 3, depth: 1 }),
-    getServerCollection("activities", { sort: "date", depth: 1 }),
+    getServerCollection("activities", { sort: "startDate", depth: 1 }),
     getHomepageData(),
   ]);
 
   const latestPosts = blogDocs.map(mapPayloadBlogPost);
+  const now = Date.now();
   const upcomingActivities = activityDocs
     .map(mapPayloadActivity)
-    .filter((a) => a.status === "upcoming")
+    .filter((a) => new Date(a.startDate).getTime() > now)
     .slice(0, 3);
 
   const highlights: HighlightItem[] =

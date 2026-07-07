@@ -46,6 +46,13 @@ const resolveImageUrl = (media: unknown, fallback: string): string => {
   return mediaDoc.url || fallback;
 };
 
+const parseIsoDate = (value: unknown, fallback?: string): string => {
+  const fallbackIso = fallback ?? new Date().toISOString();
+  const valueStr = typeof value === "string" ? value.trim() : String(value ?? "");
+  const date = new Date(valueStr);
+  return Number.isNaN(date.getTime()) ? fallbackIso : date.toISOString();
+};
+
 type PayloadMediaDoc = PayloadMedia & { mimeType?: string };
 
 const isVideo = (media: unknown): boolean => {
@@ -126,7 +133,7 @@ export const mapPayloadBlogPost = (doc: PayloadDoc): BlogPost => ({
   coverImage: resolveImageUrl(doc.coverImage, placeholderBlogImage),
   author: String(doc.author || "Nyala Labs"),
   categories: Array.isArray(doc.categories) ? (doc.categories as string[]) : [],
-  publishedAt: String(doc.publishedAt || new Date().toISOString()),
+  publishedAt: parseIsoDate(doc.publishedAt),
   readingTime: Number(doc.readingTime || 1),
   featured: Boolean(doc.featured),
 });
@@ -141,12 +148,28 @@ export const mapPayloadCommitteeMember = (doc: PayloadDoc): CommitteeMember => (
   order: Number(doc.order || 0),
 });
 
-export const mapPayloadActivity = (doc: PayloadDoc): Activity => ({
-  _id: String(doc.id || ""),
-  title: String(doc.title || ""),
-  description: String(doc.description || ""),
-  date: String(doc.date || new Date().toISOString()),
-  location: String(doc.location || "TBA"),
-  image: resolveImageUrl(doc.image, placeholderActivityImage),
-  status: String(doc.status || "upcoming"),
-});
+export const mapPayloadActivity = (doc: PayloadDoc): Activity => {
+  const startDate = parseIsoDate(doc.startDate || doc.date);
+  const rawEnd = doc.endDate ? String(doc.endDate) : null;
+  const endDate = rawEnd
+    ? parseIsoDate(rawEnd, startDate)
+    : (() => {
+        const d = new Date(startDate);
+        d.setHours(d.getHours() + 2);
+        return d.toISOString();
+      })();
+  const speakers: string[] = Array.isArray(doc.speakers)
+    ? (doc.speakers as Array<{ name?: string }>).map((s) => String(s.name || "")).filter(Boolean)
+    : [];
+
+  return {
+    _id: String(doc.id || ""),
+    title: String(doc.title || ""),
+    description: String(doc.description || ""),
+    startDate,
+    endDate,
+    location: String(doc.location || "TBA"),
+    image: resolveImageUrl(doc.image, placeholderActivityImage),
+    speakers,
+  };
+};

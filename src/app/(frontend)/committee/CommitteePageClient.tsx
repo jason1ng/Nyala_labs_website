@@ -61,7 +61,7 @@ export default function CommitteePageClient({ members }: CommitteePageClientProp
             href="https://forms.gle/f3g69MxUrquDFWQZ9"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-block border border-nyala-red bg-nyala-red px-8 py-3 font-mono text-xs uppercase tracking-[0.2em] text-nyala-white transition-all duration-300 hover:bg-nyala-red-dark"
+            className="mt-6 inline-block border border-nyala-red bg-nyala-red px-8 py-3 font-mono text-xs uppercase tracking-[0.2em] text-nyala-white transition-all duration-300 hover:bg-nyala-red-dark hover:shadow-lg hover:shadow-nyala-red/20"
           >
             apply now →
           </a>

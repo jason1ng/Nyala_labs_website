@@ -1326,21 +1326,25 @@ export default function SplashCursor({
     <div
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        zIndex: 50,
+        inset: 0,
+        zIndex: 20,
         pointerEvents: 'none',
         width: '100vw',
-        height: '100vh'
+        height: '100vh',
+        overflow: 'hidden'
       }}
     >
       <canvas
         ref={canvasRef}
         id="fluid"
         style={{
-          width: '100vw',
-          height: '100vh',
-          display: 'block'
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          display: 'block',
+          opacity: 0.45,
+          mixBlendMode: 'screen'
         }}
       />
     </div>
