@@ -13,12 +13,6 @@ const partnerships = [
     logo: './images/partners/chutes-logo.webp',
     url: 'https://chutes.ai/',
   },
-  {
-    id: 2,
-    name: 'Partner Two',
-    logo: './images/partners/partner2.png',
-    url: '#',
-  },
 ];
 
 // Convert partnerships to LogoLoop format
@@ -49,13 +43,13 @@ const PartnershipsSection = () => {
   const isInView = useInView(containerRef, { once: true, margin: '-120px' });
 
   const containerVariants = {
-    hidden: { opacity: 0, y: 24 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.7,
-        ease: 'easeOut',
+        duration: 0.6,
+        ease: "easeOut" as const,
       },
     },
   };

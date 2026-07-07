@@ -141,14 +141,14 @@ export function getTimeUntilNext(event: Activity): string {
 }
 
 // ─── Calendar Helpers ────────────────────────────────────
-/** Get set of date strings (YYYY-MM-DD) that have events. */
-export function getEventDates(events: Activity[]): Set<string> {
-  return new Set(events.map((e) => e.startDate.slice(0, 10)));
+/** Get set of date strings (YYYY-MM-DD) that have events, from a list of ISO date strings. */
+export function getEventDates(eventDates: string[]): Set<string> {
+  return new Set(eventDates.map((d) => d.slice(0, 10)));
 }
 
-/** Count events on a specific date. */
-export function getEventCountOnDate(events: Activity[], dateStr: string): number {
-  return events.filter((e) => e.startDate.slice(0, 10) === dateStr).length;
+/** Count events on a specific date, from a list of ISO date strings. */
+export function getEventCountOnDate(eventDates: string[], dateStr: string): number {
+  return eventDates.filter((d) => d.slice(0, 10) === dateStr).length;
 }
 
 /** Format a time string from ISO date. */
@@ -160,6 +160,29 @@ export function formatEventTime(isoDate: string): string {
     minute: "2-digit",
     hour12: false,
   });
+}
+
+/** Format a full date + time string in a given IANA timezone (used for scraped external events). */
+export function formatEventDateTime(isoDate: string, timezone: string): string {
+  const d = new Date(isoDate);
+  if (Number.isNaN(d.getTime())) return "";
+  const datePart = d.toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: timezone,
+  });
+  const timePart = d.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: timezone,
+  });
+  return `${datePart} · ${timePart}`;
+}
+
+/** Format a scraped event's target_profile into a display label. */
+export function formatSourceLabel(source: string): string {
+  return source.toLowerCase() === "gdgutm" ? "GDG UTM" : source;
 }
 
 /** Resolve endDate: if blank, default to startDate + 2 hours. */

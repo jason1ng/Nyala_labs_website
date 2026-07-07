@@ -1,0 +1,15 @@
+# Local / staging without TLS — HTTP only (host Postgres unchanged)
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+
+services:
+  traefik:
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+
+  web:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nyalalabs.rule=PathPrefix(`/`)
+      - traefik.http.routers.nyalalabs.entrypoints=web
+      - traefik.http.routers.nyalalabs.priority=1
+      - traefik.http.services.nyalalabs.loadbalancer.server.port=3000

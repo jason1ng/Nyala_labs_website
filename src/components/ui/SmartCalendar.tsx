@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { filterEventsByStatus, getEventCountOnDate, getEventDates } from "@/lib/event-utils";
-import type { Activity } from "@/types";
+import { FiX } from "react-icons/fi";
+import { getEventDates } from "@/lib/event-utils";
 
 interface SmartCalendarProps {
-  events: Activity[];
+  eventDates: string[];
   selectedDate: string | null;
   onSelectDate: (dateStr: string | null) => void;
-  filterMode: "all" | "upcoming" | "past";
-  onFilterMode: (mode: "all" | "upcoming" | "past") => void;
+  filterMode?: "all" | "upcoming" | "past";
+  onFilterMode?: (mode: "all" | "upcoming" | "past") => void;
 }
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -33,7 +33,7 @@ function toDateStr(year: number, month: number, day: number): string {
 }
 
 export default function SmartCalendar({
-  events,
+  eventDates,
   selectedDate,
   onSelectDate,
   filterMode,
@@ -44,18 +44,16 @@ export default function SmartCalendar({
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [direction, setDirection] = useState(0);
 
-  const visibleEvents = useMemo(() => {
-    if (filterMode === "upcoming") {
-      return filterEventsByStatus(events, "upcoming");
-    }
-    if (filterMode === "past") {
-      return filterEventsByStatus(events, "past");
-    }
-    return events;
-  }, [events, filterMode]);
+  // Avoid SSR/client hydration mismatch: server and client may compute a
+  // different "today" if their timezones differ, so only mark today's date
+  // once mounted on the client.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const todayStr = toDateStr(today.getFullYear(), today.getMonth(), today.getDate());
-  const eventDates = useMemo(() => getEventDates(visibleEvents), [visibleEvents]);
+  const todayStr = mounted
+    ? toDateStr(today.getFullYear(), today.getMonth(), today.getDate())
+    : "";
+  const datesWithEvents = useMemo(() => getEventDates(eventDates), [eventDates]);
 
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
   const firstDay = getFirstDayOfWeek(viewYear, viewMonth);
@@ -178,8 +176,7 @@ export default function SmartCalendar({
             const dateStr = toDateStr(viewYear, viewMonth, day);
             const isToday = dateStr === todayStr;
             const isSelected = dateStr === selectedDate;
-            const eventCount = getEventCountOnDate(visibleEvents, dateStr);
-            const hasEvents = eventDates.has(dateStr);
+            const hasEvents = datesWithEvents.has(dateStr);
 
             return (
               <button
@@ -198,16 +195,12 @@ export default function SmartCalendar({
                   }`}
               >
                 <span>{day}</span>
-                {/* Event density dots */}
+                {/* Event density dot */}
                 {hasEvents && !isSelected && (
-                  <div className="absolute -bottom-0.5 flex gap-[2px]">
-                    {Array.from({ length: Math.min(eventCount, 3) }).map((_, di) => (
-                      <div
-                        key={di}
-                        className={`h-[3px] w-[3px] rounded-full ${isToday ? "bg-nyala-yellow" : "bg-nyala-red"
-                          }`}
-                      />
-                    ))}
+                  <div className="absolute bottom-1 flex">
+                    <div
+                      className={`h-[5px] w-[5px] rounded-full ${isToday ? "bg-nyala-yellow" : "bg-nyala-red"}`}
+                    />
                   </div>
                 )}
               </button>
@@ -231,22 +224,24 @@ export default function SmartCalendar({
       </AnimatePresence>
 
       {/* Filter buttons */}
-      <div className="mt-4 flex gap-2">
-        {(["all", "upcoming", "past"] as const).map((mode) => (
-          <button
-            key={mode}
-            onClick={() => onFilterMode(mode)}
-            className={`flex-1 rounded-md border px-3 py-1.5 font-mono text-[10px]
-                       uppercase tracking-wider transition-all duration-200
-                       ${filterMode === mode
-                ? "border-nyala-red bg-nyala-red/10 text-nyala-red"
-                : "border-nyala-gray-light text-nyala-gray-muted hover:border-nyala-yellow/30 hover:text-nyala-yellow"
-              }`}
-          >
-            {mode}
-          </button>
-        ))}
-      </div>
+      {filterMode && onFilterMode && (
+        <div className="mt-4 flex gap-2">
+          {(["all", "upcoming", "past"] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => onFilterMode(mode)}
+              className={`flex-1 rounded-md border px-3 py-1.5 font-mono text-[10px]
+                         uppercase tracking-wider transition-all duration-200
+                         ${filterMode === mode
+                  ? "border-nyala-red bg-nyala-red/10 text-nyala-red"
+                  : "border-nyala-gray-light text-nyala-gray-muted hover:border-nyala-yellow/30 hover:text-nyala-yellow"
+                }`}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Selected date label */}
       <AnimatePresence>
@@ -257,19 +252,20 @@ export default function SmartCalendar({
             exit={{ opacity: 0, height: 0 }}
             className="mt-3 overflow-hidden"
           >
-            <div className="flex items-center justify-between rounded-md bg-nyala-red/10 px-3 py-2">
-              <span className="font-mono text-[10px] text-nyala-red">
-                📅 Showing activities on{" "}
+            <div className="flex items-center justify-between px-1">
+              <span className="font-mono text-xs font-semibold text-nyala-white">
                 {new Date(selectedDate + "T00:00:00").toLocaleDateString("en-US", {
-                  month: "short",
+                  month: "long",
                   day: "numeric",
                 })}
               </span>
               <button
                 onClick={() => onSelectDate(null)}
-                className="font-mono text-[10px] text-nyala-gray-muted hover:text-nyala-red transition-colors"
+                className="flex h-6 w-6 items-center justify-center rounded-full
+                           bg-nyala-gray-light text-nyala-white
+                           transition-colors hover:bg-nyala-red hover:text-nyala-white"
               >
-                ✕
+                <FiX size={13} />
               </button>
             </div>
           </motion.div>

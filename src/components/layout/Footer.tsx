@@ -24,15 +24,20 @@ export default function Footer() {
         <div className="grid gap-12 md:grid-cols-3">
           {/* brand */}
           <div>
-            <motion.h3
-              className="font-mono text-xl font-bold tracking-tighter"
+            <motion.div
+              className="flex items-center gap-3"
               whileHover={{ scale: 1.02 }}
             >
-              <span className="text-nyala-red">N</span>
-              <span className="text-nyala-yellow">y</span>
-              <span className="text-nyala-white">ala </span>
-              <span className="text-nyala-yellow">Labs</span>
-            </motion.h3>
+              <img
+                src="/images/icons/21.svg"
+                alt="brand icon"
+                className="h-12 w-12 shrink-0 opacity-90"
+              />
+              <span className="font-pixel text-xl font-bold tracking-tighter">
+                <span className="text-nyala-white">NYALA</span>
+                <span className="text-nyala-red">LABS</span>
+              </span>
+            </motion.div>
             <p className="mt-3 font-mono text-xs leading-relaxed text-nyala-gray-muted">
               Nyala Labs is a Malaysia-based recognised youth society under the Ministry of
               Youth and Sports—a community for builders, creators, and innovators passionate
@@ -89,7 +94,7 @@ export default function Footer() {
               href="https://forms.gle/f3g69MxUrquDFWQZ9"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-block w-fit border border-nyala-red px-5 py-2 font-mono text-xs uppercase tracking-widest text-nyala-red transition-all duration-300 hover:bg-nyala-red hover:text-nyala-white"
+              className="mt-3 inline-block w-fit border border-nyala-red bg-nyala-red px-5 py-2 tracking-widest font-mono text-xs uppercase text-nyala-white transition-all duration-300 hover:bg-nyala-red-dark hover:shadow-lg hover:shadow-nyala-red/20"
             >
               Apply now →
             </a>

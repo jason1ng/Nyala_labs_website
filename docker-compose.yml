@@ -1,0 +1,99 @@
+# Nyala Labs — Traefik edge + Next.js (host Postgres + Cloudflare R2)
+#
+# One-time host prep (moves Apache mail to :8080, frees :80/:443 for Traefik):
+#   sudo ./scripts/migrate-apache-behind-traefik.sh
+#
+# Deploy:
+#   cp .env.example .env && chmod 600 docker/traefik/acme.json
+#   docker compose --profile setup run --rm migrate   # schema changes
+#   docker compose up -d --build
+#   ./scripts/validate-edge.sh
+
+name: nyalalabs
+
+services:
+  traefik:
+    image: traefik:v3.3
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./docker/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./docker/traefik/acme.json:/acme/acme.json
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - web
+    # Dashboard disabled publicly — avoids failed ACME for traefik.${DOMAIN} (no DNS)
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SERVER_URL: https://${DOMAIN:?Set DOMAIN in .env}
+        NEXT_PUBLIC_R2_PUBLIC_URL: ${NEXT_PUBLIC_R2_PUBLIC_URL:?Set NEXT_PUBLIC_R2_PUBLIC_URL in .env}
+        CLOUDFLARE_R2_ACCOUNT_ID: ${CLOUDFLARE_R2_ACCOUNT_ID:?Set CLOUDFLARE_R2_ACCOUNT_ID in .env}
+        DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
+        MONGODB_URI: ${MONGODB_URI:?Set MONGODB_URI in .env}
+        DEPLOY_TARGET: vps
+        PAYLOAD_BUILD: "1"
+        ALLOW_R2_DEV_URL: ${ALLOW_R2_DEV_URL:-0}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      NODE_ENV: production
+      DEPLOY_TARGET: vps
+      NEXT_PUBLIC_SERVER_URL: https://${DOMAIN}
+      PAYLOAD_PUBLIC_SERVER_URL: https://${DOMAIN}
+      NEXT_PUBLIC_R2_PUBLIC_URL: ${NEXT_PUBLIC_R2_PUBLIC_URL}
+      ALLOW_R2_DEV_URL: ${ALLOW_R2_DEV_URL:-0}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.website.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.website.entrypoints=websecure
+      - traefik.http.routers.website.tls.certresolver=letsencrypt
+      - traefik.http.services.website.loadbalancer.server.port=3000
+      - traefik.http.routers.website-http.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.website-http.entrypoints=web
+      - traefik.http.routers.website-http.middlewares=redirect-https-web@docker
+      - traefik.http.middlewares.redirect-https-web.redirectscheme.scheme=https
+      - traefik.http.middlewares.redirect-https-web.redirectscheme.permanent=true
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    profiles:
+      - setup
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DEPLOY_TARGET: vps
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - web
+
+networks:
+  web:
+    name: nyalalabs-web

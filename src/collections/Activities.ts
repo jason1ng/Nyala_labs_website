@@ -35,7 +35,7 @@ export const Activities: CollectionConfig = {
         },
         description: "When the event starts (used to compute live status)",
       },
-      validate: (value: string) => {
+      validate: (value: Date | null | undefined) => {
         if (!value) return true; // let required handle it
         const date = new Date(value);
         if (isNaN(date.getTime())) {
@@ -56,7 +56,7 @@ export const Activities: CollectionConfig = {
         description:
           "When the event ends. Leave blank to default to startDate + 2 hours.",
       },
-      validate: (value: string | null) => {
+      validate: (value: Date | null | undefined) => {
         if (!value) return true;
         const date = new Date(value);
         if (isNaN(date.getTime())) {

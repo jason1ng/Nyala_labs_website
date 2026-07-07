@@ -81,6 +81,24 @@ export type Activity = {
   speakers: string[];
 };
 
+export type EventHost = {
+  name: string;
+  avatarUrl: string | null;
+};
+
+export type ScrapedEvent = {
+  id: string;
+  title: string;
+  coverImageUrl: string;
+  eventUrl: string;
+  startAt: string;
+  endAt: string | null;
+  timezone: string;
+  locationName: string;
+  hosts: EventHost[];
+  source: string;
+};
+
 export type HeroMediaItem = {
   type: "image" | "video";
   src: string;

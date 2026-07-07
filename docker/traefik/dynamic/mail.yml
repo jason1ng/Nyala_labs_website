@@ -1,0 +1,26 @@
+# Host Apache mail stack (Roundcube + Rspamd) on host :8080 after migrate-apache-behind-traefik.sh
+http:
+  routers:
+    mail-http:
+      rule: Host(`smtp.nyalalabs.org`)
+      entryPoints:
+        - web
+      middlewares:
+        - redirect-to-https
+      service: mail
+      priority: 10
+    mail-https:
+      rule: Host(`smtp.nyalalabs.org`)
+      entryPoints:
+        - websecure
+      middlewares:
+        - mail-headers
+      service: mail
+      tls:
+        certResolver: letsencrypt
+      priority: 10
+  services:
+    mail:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8080"
