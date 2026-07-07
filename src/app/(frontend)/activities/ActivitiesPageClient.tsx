@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import SectionHeading from "@/components/ui/SectionHeading";
 import MomentumBar from "@/components/activities/MomentumBar";
 import Timeline from "@/components/activities/Timeline";
-import SmartCalendar from "@/components/activities/SmartCalendar";
+import SmartCalendar from "@/components/ui/SmartCalendar";
 import EventFocusModal from "@/components/activities/EventFocusModal";
 import { useTimeAwareness } from "@/components/activities/useTimeAwareness";
 import {
